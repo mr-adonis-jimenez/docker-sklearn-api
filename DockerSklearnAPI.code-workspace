@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "../Projects/DockerSklearnAPI/.devcontainer"
+		}
+	],
+	"settings": {
+		"chat.useAgentSkills": true,
+		"chat.useNestedAgentsMdFiles": true
+	}
+}
