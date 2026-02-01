@@ -117,7 +117,13 @@ async def predict(input_data: PredictionInput) -> PredictionOutput:
         # Get prediction probability
         if hasattr(model, 'predict_proba'):
             probabilities = model.predict_proba(features)[0]
-            probability = float(probabilities[prediction])
+            if hasattr(model, "classes_"):
+                class_indices = {label: idx for idx, label in enumerate(model.classes_)}
+                if prediction not in class_indices:
+                    raise ValueError("Predicted class not found in model classes.")
+                probability = float(probabilities[class_indices[prediction]])
+            else:
+                probability = float(np.max(probabilities))
         else:
             probability = 1.0
         

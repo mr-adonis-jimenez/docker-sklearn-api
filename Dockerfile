@@ -44,7 +44,7 @@ EXPOSE 8000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:8000/health')"
+    CMD python -c "from urllib.request import urlopen; urlopen('http://localhost:8000/health').read()"
 
 # Run application
 CMD ["uvicorn", "serve.main:app", "--host", "0.0.0.0", "--port", "8000"]
