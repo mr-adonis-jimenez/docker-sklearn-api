@@ -1,12 +1,34 @@
 """FastAPI application for scikit-learn model serving."""
 import os
+from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Dict, List
 
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 import joblib
 import numpy as np
+
+# Model configuration
+MODEL_PATH = Path("models/model.joblib")
+MODEL_VERSION = "1.0.0"
+model = None
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Manage application lifespan events."""
+    global model
+    try:
+        if MODEL_PATH.exists():
+            model = joblib.load(MODEL_PATH)
+            print(f"Model loaded successfully from {MODEL_PATH}")
+        else:
+            print(f"Warning: Model not found at {MODEL_PATH}")
+    except Exception as e:
+        print(f"Error loading model: {e}")
+    yield
+
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -15,24 +37,21 @@ app = FastAPI(
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
+    lifespan=lifespan,
 )
-
-# Model configuration
-MODEL_PATH = Path("models/model.joblib")
-MODEL_VERSION = "1.0.0"
-model = None
 
 
 class PredictionInput(BaseModel):
     """Input schema for predictions."""
     features: List[float] = Field(..., description="Input features for prediction")
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "features": [5.1, 3.5, 1.4, 0.2]
             }
         }
+    )
 
 
 class PredictionOutput(BaseModel):
@@ -53,20 +72,6 @@ class ModelInfo(BaseModel):
     version: str
     model_type: str
     features_count: int
-
-
-@app.on_event("startup")
-async def load_model():
-    """Load model on startup."""
-    global model
-    try:
-        if MODEL_PATH.exists():
-            model = joblib.load(MODEL_PATH)
-            print(f"Model loaded successfully from {MODEL_PATH}")
-        else:
-            print(f"Warning: Model not found at {MODEL_PATH}")
-    except Exception as e:
-        print(f"Error loading model: {e}")
 
 
 @app.get("/", tags=["Root"])
