@@ -9,6 +9,7 @@ on:
 
 jobs:
   security:
+    name: Lint/security
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
