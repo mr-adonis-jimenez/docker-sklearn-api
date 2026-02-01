@@ -1,5 +1,6 @@
 # Production dependencies
 fastapi==0.115.0
+starlette>=0.47.2
 uvicorn[standard]==0.32.0
 pydantic==2.9.2
 scikit-learn==1.5.2
