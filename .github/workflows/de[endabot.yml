@@ -1,35 +1,56 @@
 version: 2
 
 updates:
+  # ─────────────────────────────────────────────
+  # Python dependencies (security-first)
+  # ─────────────────────────────────────────────
   - package-ecosystem: pip
     directory: "/"
     schedule:
       interval: weekly
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 3
     rebase-strategy: auto
     commit-message:
       prefix: "deps(pip)"
     labels:
       - dependencies
-      - python
+      - security
+    groups:
+      python-security:
+        applies-to: security-updates
+      python-routine:
+        applies-to: version-updates
+        update-types:
+          - minor
+          - patch
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-major
 
+  # ─────────────────────────────────────────────
+  # Docker base image security updates
+  # ─────────────────────────────────────────────
   - package-ecosystem: docker
     directory: "/"
     schedule:
       interval: weekly
-    open-pull-requests-limit: 3
+    open-pull-requests-limit: 2
     commit-message:
       prefix: "deps(docker)"
     labels:
       - dependencies
-      - docker
+      - security
 
+  # ─────────────────────────────────────────────
+  # GitHub Actions security updates
+  # ─────────────────────────────────────────────
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
-      interval: weekly
+      interval: monthly
     commit-message:
       prefix: "deps(actions)"
     labels:
       - dependencies
-      - ci
+      - security
