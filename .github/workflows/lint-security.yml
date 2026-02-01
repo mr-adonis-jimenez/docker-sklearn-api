@@ -9,6 +9,7 @@ on:
 
 jobs:
   security:
+name: .github/workflows/lint-security.yml
     name: Lint/security
     runs-on: ubuntu-latest
     steps:
