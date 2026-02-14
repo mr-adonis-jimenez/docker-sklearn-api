@@ -1,4 +1,4 @@
-﻿"""Test suite for FastAPI ML serving application."""
+"""Test suite for FastAPI ML serving application."""
 import pytest
 from fastapi.testclient import TestClient
 from serve.main import app
@@ -32,7 +32,7 @@ def test_predict_valid_data(client):
     """Test prediction with valid data."""
     payload = {"features": [5.1, 3.5, 1.4, 0.2]}
     response = client.post("/predict", json=payload)
-    
+
     if response.status_code == 200:
         data = response.json()
         assert "prediction" in data
